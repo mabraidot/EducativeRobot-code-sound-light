@@ -16,4 +16,4 @@ byte led_matrix[13][3] = {
   {255,    0,  150}  // Rose
 };
 
-byte led_matrix_size = sizeof(led_matrix) / sizeof(led_matrix[0]);
+byte led_matrix_size = (sizeof(led_matrix) / sizeof(led_matrix[0])) - 1;

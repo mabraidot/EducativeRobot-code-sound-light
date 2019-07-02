@@ -8,6 +8,7 @@ Micro: Attiny84
 #include <EEPROM.h>
 #include <TinyWireS.h>
 #include "led_matrix.h"
+#include "tone_matrix.h"
 
 // The default buffer size
 #ifndef TWI_RX_BUFFER_SIZE
@@ -32,7 +33,7 @@ MODE_SLAVE_LIGHT            10
 
 #define MODE_SLAVE_SOUND        9
 #define MODE_SLAVE_LIGHT        10
-byte slave_function             = MODE_SLAVE_LIGHT;
+byte slave_function             = MODE_SLAVE_SOUND;
 
 #define LED_PIN                 3
 #define GATE_PIN                0
@@ -41,9 +42,9 @@ byte slave_function             = MODE_SLAVE_LIGHT;
 #define ENCODER_A_PIN           9
 #define ENCODER_B_PIN           10
 #define RGBLED_PIN_RED          5
-#define RGBLED_PIN_GREEN        8
+#define RGBLED_PIN_GREEN_BUZZER 8
 #define RGBLED_PIN_BLUE         7
-//#define BUZZER_PIN              7
+#define BUZZER_PIN              8 // Shared with green led
 
 volatile uint8_t i2c_regs[] =
 {
@@ -63,7 +64,7 @@ const byte reg_size = sizeof(i2c_regs);
 void(* resetFunc) (void) = 0;
 
 int encoder_count = 0;
-byte encoder_max = led_matrix_size-1;
+byte encoder_max = (slave_function == MODE_SLAVE_LIGHT) ? led_matrix_size : tone_matrix_size;
 
 // Encoder Switch Debouncing (Kenneth A. Kuhn algorithm)
 #define DEBOUNCE_TIME               0.3
@@ -229,10 +230,9 @@ void setup() {
   pinMode(ENCODER_B_PIN, INPUT);
 
   pinMode(RGBLED_PIN_RED, OUTPUT);
-  pinMode(RGBLED_PIN_GREEN, OUTPUT);
+  pinMode(RGBLED_PIN_GREEN_BUZZER, OUTPUT);
   pinMode(RGBLED_PIN_BLUE, OUTPUT);
 
-  //encoder_count = displayNumber = i2c_regs[5] = EEPROM.read(0x01);
   encoder_count = displayNumber = i2c_regs[5] = read_eeprom(1);
   play(i2c_regs[5], true);
   
@@ -256,7 +256,9 @@ void loop() {
   if (readEncoderButton()){
     clickEncoder();
   }
-  set_play_number();
+  if(slave_function == MODE_SLAVE_LIGHT){
+    set_play_number();
+  }
   readReset();
 }
 
@@ -422,18 +424,31 @@ void play(int count, boolean update_reg){
 
   // If the block is Set Light, changes the RGB colour
   if(slave_function == MODE_SLAVE_LIGHT){
+
     byte redBrightness    = 255 - led_matrix[count][0];
     byte greenBrightness  = 255 - led_matrix[count][1];
     byte blueBrightness   = 255 - led_matrix[count][2];
 
     analogWrite(RGBLED_PIN_RED,   redBrightness);
-    analogWrite(RGBLED_PIN_GREEN, greenBrightness);
+    analogWrite(RGBLED_PIN_GREEN_BUZZER, greenBrightness);
     analogWrite(RGBLED_PIN_BLUE,  blueBrightness);
+
   }
   
+
   // If the block is Set Sound, changes the buzzer tone
   if(slave_function == MODE_SLAVE_SOUND){
+    noTone(RGBLED_PIN_GREEN_BUZZER);
+    for(byte i = 0; i < 3; i++){
 
+      tone(RGBLED_PIN_GREEN_BUZZER, tone_matrix[count][0], tone_matrix[count][1]);
+      delay(tone_matrix[count][2]);
+
+      tone(RGBLED_PIN_GREEN_BUZZER, tone_matrix[count][3], tone_matrix[count][4]);
+      delay(tone_matrix[count][5]);
+
+    }
+    noTone(RGBLED_PIN_GREEN_BUZZER);
   }
 
 }
