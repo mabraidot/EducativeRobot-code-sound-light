@@ -42,7 +42,7 @@ byte slave_function             = MODE_SLAVE_SOUND;
 #define ENCODER_A_PIN           9
 #define ENCODER_B_PIN           10
 #define RGBLED_PIN_RED          5
-#define RGBLED_PIN_GREEN_BUZZER 8
+#define RGBLED_PIN_GREEN        8
 #define RGBLED_PIN_BLUE         7
 #define BUZZER_PIN              8 // Shared with green led
 
@@ -230,11 +230,13 @@ void setup() {
   pinMode(ENCODER_B_PIN, INPUT);
 
   pinMode(RGBLED_PIN_RED, OUTPUT);
-  pinMode(RGBLED_PIN_GREEN_BUZZER, OUTPUT);
+  pinMode(RGBLED_PIN_GREEN, OUTPUT);
   pinMode(RGBLED_PIN_BLUE, OUTPUT);
 
   encoder_count = displayNumber = i2c_regs[5] = read_eeprom(1);
-  play(i2c_regs[5], true);
+  if(slave_function == MODE_SLAVE_LIGHT){
+    play(i2c_regs[5], true);
+  }
   
 }
 
@@ -430,7 +432,7 @@ void play(int count, boolean update_reg){
     byte blueBrightness   = 255 - led_matrix[count][2];
 
     analogWrite(RGBLED_PIN_RED,   redBrightness);
-    analogWrite(RGBLED_PIN_GREEN_BUZZER, greenBrightness);
+    analogWrite(RGBLED_PIN_GREEN, greenBrightness);
     analogWrite(RGBLED_PIN_BLUE,  blueBrightness);
 
   }
@@ -438,17 +440,7 @@ void play(int count, boolean update_reg){
 
   // If the block is Set Sound, changes the buzzer tone
   if(slave_function == MODE_SLAVE_SOUND){
-    noTone(RGBLED_PIN_GREEN_BUZZER);
-    for(byte i = 0; i < 3; i++){
-
-      tone(RGBLED_PIN_GREEN_BUZZER, tone_matrix[count][0], tone_matrix[count][1]);
-      delay(tone_matrix[count][2]);
-
-      tone(RGBLED_PIN_GREEN_BUZZER, tone_matrix[count][3], tone_matrix[count][4]);
-      delay(tone_matrix[count][5]);
-
-    }
-    noTone(RGBLED_PIN_GREEN_BUZZER);
+    tone_player(count, 2);
   }
 
 }
