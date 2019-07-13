@@ -3,8 +3,8 @@
 byte led_matrix[13][3] = {
   {  0,    0,  0  }, // OFF
   {255,    0,  0  }, // Red
-  {255,  150,  0  }, // Orange
-  {150,  255,  0  }, // Yellow
+  {255,   40,  0  }, // Orange
+  {180,  100,  0  }, // Yellow
   {255,  255,  0  }, // Chartreuse
   {  0,  255,  0  }, // Green
   {  0,  255,  150}, // Aquamarine

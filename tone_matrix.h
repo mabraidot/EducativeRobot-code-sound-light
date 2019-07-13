@@ -16,7 +16,7 @@ int tone_beats[5][4] = {
   { 8,4,8,4 },
   { 8,4,8,4 }
 };
-int tone_tempo = 100;
+int tone_tempo = 80;
 
 byte tone_matrix_size = (sizeof(tone_notes) / sizeof(tone_notes[0])) - 1;
 
@@ -32,9 +32,12 @@ void playTone(int tone, int duration) {
 void playNote(char note, int duration) {
   char names[] = { 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C', 'A' }; 
   int tones[] = { 2110, 1880, 1675, 1581, 1409, 1255, 1118, 1055, 1184 };
-  for (int i = 0; i < 9; i++) {
+  for (int i = 0; i < sizeof(names); i++) {
     if (names[i] == note) {
-      playTone(tones[i], duration);
+      //playTone(tones[i], duration);
+      tone(BUZZER_PIN, tones[i], duration);
+      delay(duration * 1.2);
+      noTone(BUZZER_PIN);
     }
   }
 }
