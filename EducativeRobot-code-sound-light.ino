@@ -440,7 +440,7 @@ void play(int count, boolean update_reg){
 
   // If the block is Set Sound, changes the buzzer tone
   if(slave_function == MODE_SLAVE_SOUND){
-    tone_player(count, 2);
+    tone_player(count, 1);
   }
 
 }
