@@ -29,6 +29,9 @@ MODE_SLAVE_WAIT_LIGHT       7
 MODE_SLAVE_WAIT_SOUND       8
 MODE_SLAVE_SOUND            9
 MODE_SLAVE_LIGHT            10
+MODE_WHILE_START            11
+MODE_WHILE_END              12
+MODE_END_OF_PROGRAM         99
 */
 
 #define MODE_SLAVE_SOUND        9
