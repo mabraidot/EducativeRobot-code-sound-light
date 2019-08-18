@@ -222,7 +222,11 @@ void requestEvent()
 void setup() {
 
   wdt_disable();
-	wdt_enable(WDTO_60MS); // Watchdog 60 ms
+  if(slave_function == MODE_SLAVE_SOUND){
+	  wdt_enable(WDTO_4S); // Watchdog 4 s
+  }else{
+    wdt_enable(WDTO_60MS); // Watchdog 60 ms
+  }
 
   pinMode(RESET_PIN, INPUT);            // Soft RESET
   pinMode(LED_PIN, OUTPUT);             // Status LED
