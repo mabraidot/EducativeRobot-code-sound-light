@@ -37,7 +37,7 @@ MODE_END_OF_PROGRAM         99
 
 #define MODE_SLAVE_SOUND        9
 #define MODE_SLAVE_LIGHT        10
-byte slave_function             = MODE_SLAVE_SOUND;
+byte slave_function             = MODE_SLAVE_LIGHT;
 
 #define LED_PIN                 3
 #define GATE_PIN                0
@@ -410,21 +410,15 @@ void clickEncoder(){
 
 
 void readReset(){
-  static const unsigned int REFRESH_INTERVAL = 50; // ms 
-  static unsigned long lastRefreshTime = 0;
-  if(millis() - lastRefreshTime >= REFRESH_INTERVAL){
-    lastRefreshTime = millis();
-    if(!digitalRead(RESET_PIN)){
-      if(i2c_regs[3]){      // If it is soft resetting for the first time, reset it for real
-        //EEPROM.write(0x01, displayNumber);
-        write_eeprom(1, displayNumber);
-        resetFunc();
-      }
-      i2c_regs[1] = 0;                    // disable slave
-      i2c_regs[3] = 0;   // Set itself as an inactive block
-    } else {                              // reset pin is less than 1000/1024 * 5 vcc
-      i2c_regs[3] = 1;   // Set itself as an active block
+  if(!digitalRead(RESET_PIN)){
+    if(i2c_regs[3]){      // If it is soft resetting for the first time, reset it for real
+      write_eeprom(1, displayNumber);
+      resetFunc();
     }
+    i2c_regs[1] = 0;                    // disable slave
+    i2c_regs[3] = 0;   // Set itself as an inactive block
+  } else {                              // reset pin is less than 1000/1024 * 5 vcc
+    i2c_regs[3] = 1;   // Set itself as an active block
   }
 }
 
