@@ -9,6 +9,7 @@ Micro: Attiny84
 #include <TinyWireS.h>
 #include "led_matrix.h"
 #include "tone_matrix.h"
+#include <avr/wdt.h>
 
 // The default buffer size
 #ifndef TWI_RX_BUFFER_SIZE
@@ -220,6 +221,9 @@ void requestEvent()
 
 void setup() {
 
+  wdt_disable();
+	wdt_enable(WDTO_60MS); // Watchdog 60 ms
+
   pinMode(RESET_PIN, INPUT);            // Soft RESET
   pinMode(LED_PIN, OUTPUT);             // Status LED
   pinMode(GATE_PIN, OUTPUT);            // Status GATE for child slave
@@ -265,6 +269,8 @@ void loop() {
     set_play_number();
   }
   readReset();
+
+  wdt_reset();
 }
 
 
