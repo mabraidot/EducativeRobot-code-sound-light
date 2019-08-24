@@ -225,7 +225,7 @@ void setup() {
   if(slave_function == MODE_SLAVE_SOUND){
 	  wdt_enable(WDTO_4S); // Watchdog 4 s
   }else{
-    wdt_enable(WDTO_60MS); // Watchdog 60 ms
+    wdt_enable(WDTO_500MS); // Watchdog 500 ms
   }
 
   pinMode(RESET_PIN, INPUT);            // Soft RESET
